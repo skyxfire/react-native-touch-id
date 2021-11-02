@@ -21,7 +21,7 @@
     // Convert unsigned char buffer to NSString of hex values
     NSMutableString *output = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
     for(int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++)
-        [output appendFormat:@"%02x" sha256Buffer[i]];
+        [output appendFormat:@"%02x", sha256Buffer[i]];
     
     return output;
 }
