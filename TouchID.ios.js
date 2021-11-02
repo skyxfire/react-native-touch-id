@@ -43,9 +43,9 @@ export default {
         }
 
         reject('UNKNOWN REASION')
-      });
-    }, succeed => {
+      }, succeed => {
       resolve(succeed);
+    });
     });
   }
 };
