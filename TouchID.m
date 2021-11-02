@@ -45,7 +45,7 @@ RCT_EXPORT_METHOD(isSupported: (NSDictionary *)options
 
 RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                   options:(NSDictionary *)options
-                  errorCallback: (RCTResponseSenderBlock)errorCallback,
+                  errorCallback: (RCTResponseSenderBlock)errorCallback
                   successCallback: (RCTResponseSenderBlock)successCallback)
 {
     NSNumber *passcodeFallback = [NSNumber numberWithBool:false];
