@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                           reply:^(BOOL success, NSError *error)
          {
             NSData* policyDomainState = context.evaluatedPolicyDomainState;
-            [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: policyDomainState.sha256];
+            [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: [policyDomainState sha256]];
          }];
 
         // Device does not support TouchID but user wishes to use passcode fallback
@@ -80,7 +80,7 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                           reply:^(BOOL success, NSError *error)
          {
             NSData* policyDomainState = context.evaluatedPolicyDomainState;
-            [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: policyDomainState.sha256];
+            [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: [policyDomainState sha256]];
          }];
     }
     else {
