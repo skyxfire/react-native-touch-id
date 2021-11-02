@@ -68,7 +68,7 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                 localizedReason:reason
                           reply:^(BOOL success, NSError *error)
          {
-            NSData* policyDomainState = context.evaluatedPolicyDomainState;
+            NSData* policyDomainState = [context evaluatedPolicyDomainState];
             [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: [policyDomainState sha256]];
          }];
 
@@ -79,7 +79,7 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                 localizedReason:reason
                           reply:^(BOOL success, NSError *error)
          {
-            NSData* policyDomainState = context.evaluatedPolicyDomainState;
+            NSData* policyDomainState = [context evaluatedPolicyDomainState];
             [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: [policyDomainState sha256]];
          }];
     }
