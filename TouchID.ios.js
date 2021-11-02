@@ -42,8 +42,10 @@ export default {
           return reject(createError(authConfig, error.message));
         }
 
-        resolve(true);
+        reject('UNKNOWN REASION')
       });
+    }, succeed => {
+      resolve(succeed);
     });
   }
 };

@@ -1,6 +1,7 @@
 #import "TouchID.h"
 #import <React/RCTUtils.h>
 #import "React/RCTConvert.h"
+#import "NSData_SHA256.h"
 
 @implementation TouchID
 
@@ -44,7 +45,8 @@ RCT_EXPORT_METHOD(isSupported: (NSDictionary *)options
 
 RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                   options:(NSDictionary *)options
-                  callback: (RCTResponseSenderBlock)callback)
+                  errorCallback: (RCTResponseSenderBlock)errorCallback,
+                  successCallback: (RCTResponseSenderBlock)successCallback)
 {
     NSNumber *passcodeFallback = [NSNumber numberWithBool:false];
     LAContext *context = [[LAContext alloc] init];
@@ -66,7 +68,8 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                 localizedReason:reason
                           reply:^(BOOL success, NSError *error)
          {
-             [self handleAttemptToUseDeviceIDWithSuccess:success error:error callback:callback];
+            NSData* policyDomainState = context.evaluatedPolicyDomainState;
+            [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: policyDomainState.sha256];
          }];
 
         // Device does not support TouchID but user wishes to use passcode fallback
@@ -76,7 +79,8 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                 localizedReason:reason
                           reply:^(BOOL success, NSError *error)
          {
-             [self handleAttemptToUseDeviceIDWithSuccess:success error:error callback:callback];
+            NSData* policyDomainState = context.evaluatedPolicyDomainState;
+            [self handleAttemptToUseDeviceIDWithSuccess:success error:error errorCallback:errorCallback successCallback: successCallback fingerprint: policyDomainState.sha256];
          }];
     }
     else {
@@ -84,24 +88,24 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
             NSString *errorReason = [self getErrorReason:error];
             NSLog(@"Authentication failed: %@", errorReason);
             
-            callback(@[RCTMakeError(errorReason, nil, nil), [self getBiometryType:context]]);
+            errorCallback(@[RCTMakeError(errorReason, nil, nil), [self getBiometryType:context]]);
             return;
         }
         
-        callback(@[RCTMakeError(@"RCTTouchIDNotSupported", nil, nil)]);
+        errorCallback(@[RCTMakeError(@"RCTTouchIDNotSupported", nil, nil)]);
         return;
     }
 }
 
-- (void)handleAttemptToUseDeviceIDWithSuccess:(BOOL)success error:(NSError *)error callback:(RCTResponseSenderBlock)callback {
+- (void)handleAttemptToUseDeviceIDWithSuccess:(BOOL)success error:(NSError *)error errorCallback: (RCTResponseSenderBlock)errorCallback successCallback: (RCTResponseSenderBlock)successCallback fingerprint:(NSString*)fingerprint {
     if (success) { // Authentication Successful
-        callback(@[[NSNull null], @"Authenticated with Touch ID."]);
+        successCallback(@[fingerprint]);
     } else if (error) { // Authentication Error
         NSString *errorReason = [self getErrorReason:error];
         NSLog(@"Authentication failed: %@", errorReason);
-        callback(@[RCTMakeError(errorReason, nil, nil)]);
+        errorCallback(@[RCTMakeError(errorReason, nil, nil)]);
     } else { // Authentication Failure
-        callback(@[RCTMakeError(@"LAErrorAuthenticationFailed", nil, nil)]);
+        errorCallback(@[RCTMakeError(@"LAErrorAuthenticationFailed", nil, nil)]);
     }
 }
 
